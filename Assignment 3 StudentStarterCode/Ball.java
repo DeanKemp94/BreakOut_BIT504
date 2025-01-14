@@ -32,7 +32,8 @@ public class Ball extends Sprite {
 		// Bounce off left side of screen
 		if(x <= 0) {
 			x = 0;
-			xVelocity = 1;
+			xVelocity = Math.abs(xVelocity);
+			System.out.println("Left bounce: x=" + x + ", xVelocity=" + xVelocity);
 			// TODO: Set x to 0 so it does not leave the screen
 			// TODO: Change the x velocity to make the ball go right
 		}
@@ -40,7 +41,8 @@ public class Ball extends Sprite {
 		// Bounce off right side of screen
 		if(x >= Settings.WINDOW_WIDTH - Settings.BALL_WIDTH) {
 			x = Settings.WINDOW_WIDTH - Settings.BALL_WIDTH;
-			xVelocity = -1;
+			xVelocity = -Math.abs(xVelocity);
+			System.out.println("Right bounce: x=" + x + ", xVelocity=" + xVelocity);
 			// TODO: Set x to the right edge of the screen (see the above if condition)
 			// TODO: Change the x velocity to make the ball go left
 		}
@@ -48,7 +50,8 @@ public class Ball extends Sprite {
 		// Bounce off top of screen
 		if(y <= 0) {
 			y = 0;
-			yVelocity = 1;
+			yVelocity = Math.abs(yVelocity);
+			System.out.println("Top bounce: y=" + y + ", yVelocity=" + yVelocity);
 			// TODO: Set y to 0 so it does not leave the screen
 			// TODO: Change the y velocity to make the ball go downward
 		}
