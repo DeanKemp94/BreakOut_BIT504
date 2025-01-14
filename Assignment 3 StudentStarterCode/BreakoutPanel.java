@@ -30,9 +30,16 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 		timer.start();
 		
 		// TODO: Create a new ball object and assign it to the appropriate variable
+		ball = new Ball();
+
 		// TODO: Create a new paddle object and assign it to the appropriate variable
+		paddle = new Paddle();
+
 		// TODO: Create a new bricks array (Use Settings.TOTAL_BRICKS)
+		bricks = new Brick[Settings.TOTAL_BRICKS];
+
 		// TODO: Call the createBricks() method
+		createBricks();
 	}
 	
 	private void createBricks() {
@@ -52,23 +59,43 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 	
 	private void paintBricks(Graphics g) {
 		// TODO: Loop through the bricks and call the paint() method
+		for(Brick brick : bricks) {
+			if(!brick.isBroken()){
+				brick.paint(g);
+			}
+		}
 	}
 	
 	private void update() {
 		if(gameRunning) {
 			// TODO: Update the ball and paddle
+			ball.update();
+			paddle.update();
 			collisions();
 			repaint();
+		}
+	}
+
+	private void resetGame() {
+		gameRunning = true;
+		livesLeft = 3;
+		screenMessage = "";
+		ball.resetPosition();
+		paddle.resetPosition();
+		for(Brick brick : bricks){
+			brick.setBroken(false);
 		}
 	}
 	
 	private void gameOver() {
 		// TODO: Set screen message
+		screenMessage = "Game Over! Press R to restart";
 		stopGame();
 	}
 	
 	private void gameWon() {
 		// TODO: Set screen message
+		screenMessage = "You Won! Press R to restart.";
 		stopGame();
 	}
 	
@@ -92,14 +119,14 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 		
 		// Check for win
 		boolean bricksLeft = false;
-		for(int i = 0; i < bricks.length; i++) {
-			// Check if there are any bricks left
-			if(!bricks[i].isBroken()) {
-				// Brick was found, close loop
-				bricksLeft = true;
-				break;
-			}
-		}
+        for (Brick value : bricks) {
+            // Check if there are any bricks left
+            if (!value.isBroken()) {
+                // Brick was found, close loop
+                bricksLeft = true;
+                break;
+            }
+        }
 		if(!bricksLeft) {
 			gameWon();
 			return;
@@ -111,35 +138,35 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 			// Proper game would change angle of ball depending on where it hit the paddle
 			ball.setYVelocity(-1);
 		}
-		
-		for(int i = 0; i < bricks.length; i++) {
-			if (ball.getRectangle().intersects(bricks[i].getRectangle())) {
-				int ballLeft = (int) ball.getRectangle().getMinX();
-	            int ballHeight = (int) ball.getRectangle().getHeight();
-	            int ballWidth = (int) ball.getRectangle().getWidth();
-	            int ballTop = (int) ball.getRectangle().getMinY();
 
-	            Point pointRight = new Point(ballLeft + ballWidth + 1, ballTop);
-	            Point pointLeft = new Point(ballLeft - 1, ballTop);
-	            Point pointTop = new Point(ballLeft, ballTop - 1);
-	            Point pointBottom = new Point(ballLeft, ballTop + ballHeight + 1);
+        for (Brick brick : bricks) {
+            if (ball.getRectangle().intersects(brick.getRectangle())) {
+                int ballLeft = (int) ball.getRectangle().getMinX();
+                int ballHeight = (int) ball.getRectangle().getHeight();
+                int ballWidth = (int) ball.getRectangle().getWidth();
+                int ballTop = (int) ball.getRectangle().getMinY();
 
-	            if (!bricks[i].isBroken()) {
-	                if (bricks[i].getRectangle().contains(pointRight)) {
-	                    ball.setXVelocity(-1);
-	                } else if (bricks[i].getRectangle().contains(pointLeft)) {
-	                    ball.setXVelocity(1);
-	                }
+                Point pointRight = new Point(ballLeft + ballWidth + 1, ballTop);
+                Point pointLeft = new Point(ballLeft - 1, ballTop);
+                Point pointTop = new Point(ballLeft, ballTop - 1);
+                Point pointBottom = new Point(ballLeft, ballTop + ballHeight + 1);
 
-	                if (bricks[i].getRectangle().contains(pointTop)) {
-	                    ball.setYVelocity(1);
-	                } else if (bricks[i].getRectangle().contains(pointBottom)) {
-	                    ball.setYVelocity(-1);
-	                }
-	                bricks[i].setBroken(true);
-	            }
-			}
-		}
+                if (!brick.isBroken()) {
+                    if (brick.getRectangle().contains(pointRight)) {
+                        ball.setXVelocity(-1);
+                    } else if (brick.getRectangle().contains(pointLeft)) {
+                        ball.setXVelocity(1);
+                    }
+
+                    if (brick.getRectangle().contains(pointTop)) {
+                        ball.setYVelocity(1);
+                    } else if (brick.getRectangle().contains(pointBottom)) {
+                        ball.setYVelocity(-1);
+                    }
+                    brick.setBroken(true);
+                }
+            }
+        }
 	}
 	
 	@Override
@@ -152,9 +179,11 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
         
         // Draw lives left
         // TODO: Draw lives left in the top left hand corner
+		g.setFont(new Font("Arial", Font.PLAIN,14));
+		g.drawString("Lives: " + livesLeft, Settings.LIVES_POSITION_X, Settings.LIVES_POSITION_Y);
         
         // Draw screen message
-        if(screenMessage != null) {
+        if(!screenMessage.isEmpty()) {
         	g.setFont(new Font("Arial", Font.BOLD, 18));
         	int messageWidth = g.getFontMetrics().stringWidth(screenMessage);
         	g.drawString(screenMessage, (Settings.WINDOW_WIDTH / 2) - (messageWidth / 2), Settings.MESSAGE_POSITION);
@@ -164,11 +193,22 @@ public class BreakoutPanel extends JPanel implements ActionListener, KeyListener
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO: Set the velocity of the paddle depending on whether the player is pressing left or right
+		if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+			paddle.setXVelocity(-5);
+		} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			paddle.setXVelocity(5);
+		}
+		if(e.getKeyCode() == KeyEvent.VK_R){
+			resetGame();
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO: Set the velocity of the paddle after the player has released the keys
+		if(e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_RIGHT){
+			paddle.setXVelocity(0);
+		}
 	}
 
 	@Override
