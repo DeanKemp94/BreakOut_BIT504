@@ -1,27 +1,29 @@
 import java.awt.Graphics;
 
+// This class extends the Sprite calls and represents the brick object in the game
 public class Brick extends Sprite {
 	
-	private boolean broken = false;
-	
+	private boolean broken = false; // used to the stat of the brick (Broken/not broken)
+
+	// This is the constructor to initialize the bricks position and size
 	public Brick(int x, int y) {
-		// TODO: Set x using the parameter
-		setX(x);
-		// TODO: Set y using the parameter
-		setY(y);
-		// TODO: Set the width and height of the brick using Settings.BRICK_WIDTH/HEIGHT
-		setWidth(Settings.BRICK_WIDTH);
-		setHeight(Settings.BRICK_HEIGHT);
+		setX(x); //Sets the bricks X coordinates
+		setY(y); //Sets the bricks Y coordinates
+		setWidth(Settings.BRICK_WIDTH); // Sets the bricks width
+		setHeight(Settings.BRICK_HEIGHT); // Sets the bricks height
 	}
 
+	// This method is used to check if the brick if broken
 	public boolean isBroken() {
-		return broken;	// TODO: Return the correct variable
+		return broken;
 	}
+
+	// This methods marks the brick as broken or not broken
 	public void setBroken(boolean b) {
-		// TODO: Set the broken variable using the parameter given
 		broken = b;
 	}
-	
+
+	// This draws the bricks on the screen using the g graphics object for rendering
 	public void paint(Graphics g) {
 		if(!broken) {
 			g.fillRect(x, y, Settings.BRICK_WIDTH, Settings.BRICK_HEIGHT);
